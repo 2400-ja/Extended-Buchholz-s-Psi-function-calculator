@@ -310,7 +310,7 @@ p_{x}(y)の形式で入力してください。自然数とωとΩ = p_{1}(0)も
         if (str != 0) {
         str = str.replace(/p_\{0\}\(0\)/g,"1");
         str = str.replace(/p_\{0\}\(1\)/g,"ω");
-        str = str.replace(/p_\{1\}(0)/g,"Ω");
+        str = str.replace(/p_\{1\}\(0\)/g,"Ω");
         }
         return str;
     }
