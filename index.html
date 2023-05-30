@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>ふにゃふにゃぜぇたかんすう計算機</title>
+<title>EBOCF計算機</title>
 </head>
 <body>
-    <h2>ふにゃふにゃぜぇたかんすう計算機</h2>
+    <h2>EBOCF計算機</h2>
 <form oninput="out.value = Number(num.value), out0.value = Number(num.value);" >
 <p>
-Z_{x}(y)の形式で入力してください。自然数とωも使えます。
+p_{x}(y)の形式で入力してください。自然数とωとΩも使えます。
 </p>
 <style>
     .txt{
@@ -15,18 +15,18 @@ Z_{x}(y)の形式で入力してください。自然数とωも使えます。
         width: 100%;
         padding: 0.5em;
         border: 1px solid #999;
-        box-sizing: border-box;
+        box-siping: border-box;
         margin: 0.5em 0;
     }
 </style>
 <p>
-    入力A：<input name="stra" id = "stra" type="text" value = "Z_{0}(Z_{ζ}(0))" class="txt"/> 
+    入力A：<input name="stra" id = "stra" type="text" value = "p_{0}(p_{Ω}(0))" class="txt"/> 
 </p>
 <p>
-    入力B：<input name="strb" id = "strb" type="text" value = "Z_{ζ}(0)" class="txt"/> 
+    入力B：<input name="strb" id = "strb" type="text" value = "p_{Ω}(0)" class="txt"/> 
 </p>
 <p>
-    基本列：<input name="num" id = "num" type="number" value = "0" size="5"/>
+    基本列：<input name="num" id = "num" type="number" value = "0" sipe="5"/>
 </p>
 <p>
     <button type="button" onclick="calculate()"> 
@@ -76,7 +76,7 @@ Z_{x}(y)の形式で入力してください。自然数とωも使えます。
 <br>
 <p>リンク</p>
 <p>
-    <a href="https://docs.google.com/document/d/15Kmx1r84DOnLbM4JpTAq0mTGbl8stLpirYD8M1TAN2M/edit?usp=sharing">ふにゃふにゃぜぇたかんすう</a>
+    <a href="https://docs.google.com/document/d/15Kmx1r84DOnLbM4JpTAq0mTGbl8stLpirYD8M1TAN2M/edit?usp=sharing">不動点式EBOCF</a>
 </p>
 <p>
     <a href="https://d13jason.github.io/Jason-s-Calculator-Index/">計算機集</a>
@@ -105,148 +105,107 @@ Z_{x}(y)の形式で入力してください。自然数とωも使えます。
     };
 
     function larger(x,y) {//x<yか判定する
-        var ans = false;
-        if (x == y) {
-            ans = false;
-        }else if (x == 0) {
-            if (y != 0) {
-                ans = true;
-            }
-        } else if (x == "ζ") {
-            var check = /^Z_|^0/
-            if (check.test(y)) {
-                ans = false;
-            } else{
-                ans = !larger(y,x);
-            }
-        } else if (x == leftPA(x) && extract(x)[0] != "null") {
-            if (y == leftPA(y) && extract(y)[0] != "null") {
+        if (x == y) {//x=yならfalse
+            return false;
+        }else if (x == 0) {//x = 0ならば、x<yはy != 0と同値
+            return y != 0;
+        } else if (x == leftPA(x) && extract(x)[0] != "null") {//x = p_{x0}(y0)を満たす(x0,y0) in T^2が存在するとする。
+            if (y == leftPA(y) && extract(y)[0] != "null") {//y = p_{x1}(y1)を満たす(x1,y1) in T^2が存在するとする。
                 var x0 = extract(x)[0], y0 = extract(x)[1];
                 var x1 = extract(y)[0], y1 = extract(y)[1];
-                if (x0 == x1) {
-                    ans = larger(y0,y1);
-                } else{
-                    ans = larger(x0,x1);
+                if (x0 == x1) {//x0 == x1ならば、x<yはy0 < y1と同値
+                    return larger(y0,y1);
+                } else{//そうでないならば、x<yはx0 < x1と同値
+                    return larger(x0,x1);
                 }
-            } else{
-                ans = !larger(y,x);
+            } else{//そうでないならば、x<yは!y<xと同値
+                return !larger(y,x);
             }
-        } else if (x != leftPA(x)) {
-            if (y == leftPA(y)) {
-                ans = larger(leftPA(x),y);
-            } else if (y != leftPA(y)) {
-                if (leftPA(x) == leftPA(y)) {
+        } else if (x != leftPA(x)) {//x = a+bを満たす(a,b) in PT tiems Tが存在するとする。
+            if (y == leftPA(y)) {//y in PTならば、x<yはa<yと同値
+                return larger(leftPA(x),y);
+            } else if (y != leftPA(y)) {//y = c+dを満たす(c,d) in PT times Tが存在するとする。
+                if (leftPA(x) == leftPA(y)) {//a = cならば、x<yはb<dと同値
                     var x2 = x.replace(leftPA(x) + "+", "");
                     var y2 = y.replace(leftPA(y) + "+", "");
 
-                    ans = larger(x2,y2);
-                } else{
-                    ans = larger(leftPA(x),leftPA(y));
+                    return larger(x2,y2);
+                } else{//a neq cならば、x<yはa<cと同値
+                    return larger(leftPA(x),leftPA(y));
                 }
-            } else{
-                ans = !larger(y,x);
+            } else{//そうでないならば、x<yは!y<xと同値
+                return !larger(y,x);
             }
         }
-        return ans;
     };
 
-    function dom(str) {
+    function dom(str) {//共終数
         var d = 0;
-        if (str == 0) {
+        if (str == 0) {//s = 0ならば、dom(s) = 0
             d = 0;
-        }else if (str == "ζ") {
-            d = "ζ";
-        }else if (str == rightPA(str) && extract(str)[0] != "null") {
+        }else if (str == rightPA(str) && extract(str)[0] != "null") {//s = p_{x}(y)を満たす(x,y) in T^2が存在するとする。
             var x = extract(str)[0];
             var y = extract(str)[1];
-            if (y == 0) {
-                if (x == 0) {
-                    d = "Z_{0}(0)";
-                }else if (dom(x) == "Z_{0}(0)" || dom(x) == "ζ") {
+            if (y == 0) {//dom(y) = 0とする。
+                if (x == 0) {//dom(x) = 0ならば、dom(s) = 1
+                    d = "p_{0}(0)";
+                }else if (dom(x) == "p_{0}(0)") {//dom(x) = 1ならば、dom(s) = s
                     d = str;
-                }else if (larger(str,dom(x)) && extract(dom(x))[1] == 0 && dom(extract(dom(x))[0]) == "ζ") {
-                    d = "Z_{0}(Z_{0}(0))";
-                }else{
+                }else{//dom(x) notin {0,1}ならば、dom(s) = dom(x)
                     d = dom(x);
                 }
-            }else if (dom(y) == "Z_{0}(0)") {
-                d = "Z_{0}(Z_{0}(0))";
-            }else if (larger(str,dom(y))) {
-                d = "Z_{0}(Z_{0}(0))";
-            }else{
+            }else if (dom(y) == "p_{0}(0)") {//dom(y) = 1ならば、dom(s) = ω
+                d = "p_{0}(p_{0}(0))";
+            }else if (larger(str,dom(y))) {//dom(y) notin {0,1}かつs < dom(y)ならば、dom(s) = ω
+                d = "p_{0}(p_{0}(0))";
+            }else{//上記すべてに当てはまらないならば、dom(s) = dom(y)
                 d = dom(y);
             }
-        }else if (str != rightPA(str)) {
+        }else if (str != rightPA(str)) {//s = a+bを満たす(a,b) in PT times Tが存在するならば、dom(s) = dom(b)
             d = dom(rightPA(str))
         }
         return d;
     }
 
-    function fund(str,num) {
+    function fund(str,num) {//基本列
         var f = 0;
-        if (str == 0) {
+        if (str == 0) {//s = 0ならば、s[t] = 0
             f = 0;
-        }else if (str == "ζ") {
-            f = num;
-        }else if (str == rightPA(str) && extract(str)[0] != "null") {
+        }else if (str == rightPA(str) && extract(str)[0] != "null") {//s = p_{x}(y)を見たす(x,y) in T^2が存在するとする。
             var x = extract(str)[0];
             var y = extract(str)[1];
-            if (y == 0) {
-                if (x == 0) {
+            if (y == 0) {//dom(y) = 0とする。
+                if (x == 0) {//dom(x) = 0ならば、s[t] = 0
                     f = 0;
-                }else if (dom(x) == "Z_{0}(0)" || dom(x) == "ζ") {
-                    f = num;
-                }else if (larger(str,dom(x)) && extract(dom(x))[1] == 0 && dom(extract(dom(x))[0]) == "ζ") {
-                    var x0 = extract(dom(x))[0];
-                    if (larger(0,num) && larger(num,"Z_{0}(Z_{0}(0))")) {
-                        var g = extract(fund(str,fund(num,0)))[0];
-                        while (/^ζ/.test(g)) {
-                            g = g.slice(2)
-                        }
-                        f = "Z_{"+ fund(x,"Z_{"+ fund(x0,g) +"}(0)") +"}("+ y +")";
-                    }else{
-                        f = "Z_{"+ fund(x,"Z_{"+ fund(x0,0) +"}(0)") +"}("+ y +")";
-                    }
-                }else{
-                    f = "Z_{"+ fund(x,num) +"}("+ y +")";
+                }else if (dom(x) == "p_{0}(0)") {//dom(x) = 1ならば、s[t] = p_{x[0]}(t)
+                    f = "p_{"+ fund(x,0) +"}("+ num +")";
+                }else{//dom(x) notin {0,1}ならば、s[t] = p_{x[t]}(y)
+                    f = "p_{"+ fund(x,num) +"}("+ y +")";
                 }
-            }else if (dom(y) == "Z_{0}(0)") {
-                if (larger(0,num) && larger(num,"Z_{0}(Z_{0}(0))")) {
-                    f = "Z_{"+ x +"}("+ fund(y,0) +")+"+ fund(str,fund(num,0));
-                }else{
-                    f = "Z_{"+ x +"}("+ fund(y,0) +")";
+            }else if (dom(y) == "p_{0}(0)") {//dom(y) = 1とする。
+                if (larger(0,num) && larger(num,"p_{0}(p_{0}(0))")) {//tが正整数ならば、s[t] = p_{x}(y[0]) + s[t-1]
+                    f = "p_{"+ x +"}("+ fund(y,0) +")+"+ fund(str,fund(num,0));
+                }else{//そうでないならば、s[t] = p_{x}(y[0])
+                    f = "p_{"+ x +"}("+ fund(y,0) +")";
                 }
-            }else if (dom(y) == "Z_{0}(Z_{0}(0))") {
-                f = "Z_{"+ x +"}("+ fund(y,num) +")";
-            }else if (y != 0 && dom(y) != "Z_{0}(0)" && dom(y) != "Z_{0}(Z_{0}(0))") {
-                if (larger(str,dom(y))) {
-                    if (extract(dom(y))[1] == 0 && dom(extract(dom(y))[0]) == "Z_{0}(0)") {
-                        var x0 = extract(dom(y))[0];
-                        if (larger(0,num) && larger(num,"Z_{0}(Z_{0}(0))")) {
-                            var g =  extract(fund(str,fund(num,0)))[1];
-                            f = "Z_{"+ x +"}("+ fund(y,"Z_{"+ fund(x0,0) +"}("+ g +")") +")";
-                        }else{
-                            f = "Z_{"+ x +"}("+ fund(y,"Z_{"+ fund(x0,0) +"}(0)") +")";
-                        }
-                    }else if (extract(dom(y))[1] == 0 && dom(extract(dom(y))[0]) == "ζ") {
-                        var x0 = extract(dom(y))[0];
-                        if (larger(0,num) && larger(num,"Z_{0}(Z_{0}(0))")) {
-                            var g =  extract(fund(str,fund(num,0)))[1];
-                            f = "Z_{"+ x +"}("+ fund(y,"Z_{"+ fund(x0,g) +"}(0)") +")";
-                        }else{
-                            f = "Z_{"+ x +"}("+ fund(y,"Z_{"+ fund(x0,0) +"}(0)") +")";
-                        }
+            }else if (y != 0 && dom(y) != "p_{0}(0)") {//dom(y) notin {0,1}とする。
+                if (larger(str,dom(y))) {//s < dom(y)とする。
+                    if (larger(0,num) && larger(num,"p_{0}(p_{0}(0))")) {//t in Nかつs[t[0]] = p_{x}(G)を満たすGが存在するならば、s[t] = p_{x}(y[G])
+                        var g = fund(str,fund(num,0));
+                        f = "p_{"+ x + "}("+ fund(y,extract(g)[1]) + ")";
+                    } else {//そうでないならば、s[t] = p_{x}(y[0])
+                        f = "p_{"+ x + "}("+ fund(y,0) + ")";
                     }
-                }else{
-                    f = "Z_{"+ x +"}("+ fund(y,num) +")";
+                } else {//dom(y) <= sならば、s[t] = p_{x}(y[t])
+                    f = "p_{"+ x +"}("+ fund(y,num) +")";
                 }
             }
-        }else if (str != rightPA(str)) {
+        }else if (str != rightPA(str)) {//s = a+xmを満たす(a,xm) in PT times Tが存在するとする。
             var xm = rightPA(str);
-            if (fund(xm,num) == 0) {
+            if (fund(xm,num) == 0) {//xm[t] = 0ならば、s[t] = a
                 var l = xm.length;
                 f = str.slice(0,-l-1);
-            }else{
+            }else{//xm[t] != 0ならば、s[t] = a+xm[t]
                 var l = xm.length;
                 var t = str.slice(0,-l);
                 f = t + fund(xm,num);
@@ -299,9 +258,7 @@ Z_{x}(y)の形式で入力してください。自然数とωも使えます。
         var btype0 = ["(",")"],btype1 = ["{","}"];
         var last_br_num = str0.lastIndexOf(")");//一番右にある")"の位置
         var a = str0;
-        if (/ζ$/.test(str0)) {
-            a = "ζ"
-        } else if (/0$/.test(str0)) {
+        if (/0$/.test(str0)) {
             a = 0
         } else if (-0.5 < last_br_num) {
             var op0 = opsearch(str0,last_br_num,btype0);//一番右にある")"に対応した"("の位置
@@ -315,9 +272,7 @@ Z_{x}(y)の形式で入力してください。自然数とωも使えます。
         var btype0 = ["(",")"],btype1 = ["{","}"];
         var br_num = str0.indexOf("{");//一番右にある"{"の位置
         var a = str0;
-        if (/^ζ/.test(str0)) {
-            a = "ζ"
-        } else if (/^0/.test(str0)) {
+        if (/^0/.test(str0)) {
             a = 0
         } else if (-0.5 < br_num) {
             var cl1 = clsearch(str0,br_num,btype1);//一番右にある"{"に対応した"}"の位置
@@ -327,7 +282,7 @@ Z_{x}(y)の形式で入力してください。自然数とωも使えます。
         return a;
     };
 
-    function extract(str0){//一番左のZ_{x}(y)に対し[x,y]を返す。存在しないなら、["null","null"]を返す。
+    function extract(str0){//一番左のp_{x}(y)に対し[x,y]を返す。存在しないなら、["null","null"]を返す。
         var btype0 = ["(",")"],btype1 = ["{","}"];
         var x = "null",y = "null";
         var br_num = str0.indexOf("{");//一番右にある"{"の位置
@@ -348,21 +303,23 @@ Z_{x}(y)の形式で入力してください。自然数とωも使えます。
         while (numleg.test(str)) {
             var matchnum = str.match(numleg);
             var n0 = parseInt(matchnum);
-            var nn = "Z_{0}(0)";
+            var nn = "p_{0}(0)";
                 for (let i = 1; i < n0; i++) {
-                    nn = nn + "+Z_{0}(0)";
+                    nn = nn + "+p_{0}(0)";
                 };
             str = str.replace(matchnum,nn);
         }
-        str = str.replace(/ω/g,"Z_{0}(Z_{0}(0))")
+        str = str.replace(/ω/g,"p_{0}(p_{0}(0))")
+        str = str.replace(/Ω/g,"p_{p_{0}(0)}(0)")
         }
         return str;
     };
 
     function reformal(str) {//1やωに変換し直して見やすくする
         if (str != 0) {
-        str = str.replace(/Z_\{0\}\(0\)/g,"1");
-        str = str.replace(/Z_\{0\}\(1\)/g,"ω");
+        str = str.replace(/p_\{0\}\(0\)/g,"1");
+        str = str.replace(/p_\{0\}\(1\)/g,"ω");
+        str = str.replace(/p_\{1\}(0)/g,"Ω");
         }
         return str;
     }
