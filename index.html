@@ -7,7 +7,7 @@
     <h2>EBOCF計算機</h2>
 <form oninput="out.value = Number(num.value), out0.value = Number(num.value);" >
 <p>
-p_{x}(y)の形式で入力してください。自然数とωとΩも使えます。
+p_{x}(y)の形式で入力してください。自然数とωとΩ = p_{1}(0)も使えます。
 </p>
 <style>
     .txt{
@@ -135,7 +135,7 @@ p_{x}(y)の形式で入力してください。自然数とωとΩも使えま�
         if (str == 0) {//s = 0ならば、dom(s) = 0
             d = 0;
         }else if (str == rightPA(str) && extract(str)[0] != "null") {//s = p_{x}(y)を満たす(x,y) in T^2が存在するとする。
-            var x = extract(str)[0];
+            var x = extract(str)[0]; 
             var y = extract(str)[1];
             if (y == 0) {//dom(y) = 0とする。
                 if (x == 0) {//dom(x) = 0ならば、dom(s) = 1
